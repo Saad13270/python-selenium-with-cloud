@@ -1,0 +1,98 @@
+Lab 5: Parallel Execution of Tests using Selenium Grid on AWS
+
+Objective: Set up a Selenium Grid on AWS to run tests on different browsers in parallel.
+
+Tasks:
+1. Set up Selenium Grid Hub on EC2.
+2. Register multiple nodes with different browsers.
+3. Run a test suite in parallel across nodes.
+
+Documentation:
+- Introduction to Selenium Grid.
+- Setting up Hub and Nodes on EC2.
+- Parallel execution in Selenium.
+
+Prerequisites:
+1- An AWS account with administrative access.
+2- Python Automation Course
+3- Python Selenium Course
+4- Bash Script Deep Dive Course
+5- Previous Lab completed
+
+
+
+
+Implementation Documentation:
+
+Introduction to Selenium Grid
+Selenium Grid is a powerful tool that allows you to run multiple Selenium tests in parallel across different browsers, operating systems, and machines. It consists of a hub and multiple nodes. The hub controls the execution of tests on different nodes.
+Step 1: Setting Up Selenium Grid Hub on EC2
+    • Log in to your AWS account.
+    • Launch a new EC2 instance (Choose an OS based on your preference ubuntu).
+    • Install Java on the EC2 instance.
+    • Download and start the Selenium Grid Hub:
+sudo apt update
+
+sudo apt install default-jre
+
+#download standalone selenium
+
+wget https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+
+# Start the Selenium Grid Hub on your EC2 instance.
+
+java -jar selenium-server-standalone-3.141.59.jar -role hub
+
+    • 
+Access the hub using http://<EC2-Public-IP>:4444/grid/console.
+Setting up Hub and Nodes on EC2
+Step 2: Registering Nodes with Different Browsers
+    • Launch multiple EC2 instances (nodes) with different configurations (e.g., different browsers and operating systems).
+    • Install Java on each node.
+    • Download and start the Selenium Standalone Server on each node as shown above
+    • Type following command to register the nodes
+    • 
+http://<Hub-IP>:4444/grid/register
+    • 
+    • Nodes will be registered with the hub.
+Parallel Execution in Selenium
+Step 3: Running a Test Suite in Parallel
+You can use EC2 or Local Machine. It's totally up to you to run the test suite in parallel.
+
+from selenium import webdriver
+import time
+
+# Define the capabilities (browser, platform)
+capabilities = {
+    "browserName": "chrome",
+    "platform": "LINUX"
+}
+
+options = webdriver.ChromeOptions()
+options.set_capability("browserName", "chrome")
+options.set_capability("platform", "LINUX")
+
+# Start the browsers, make sure to replace your Public IPs
+driver1 = webdriver.Remote(
+    command_executor='http://172.31.19.249:4444/wd/hub',
+    options=options
+)
+
+driver2 = webdriver.Remote(
+    command_executor='http://172.31.19.249:4444/wd/hub',
+    options=options
+)
+
+# Close the browsers
+time.sleep(5)
+driver1.quit()
+driver2.quit()
+
+Explanation:
+    • We import necessary libraries and define desired capabilities for different browsers.
+    • We start the browsers using webdriver.Remote by specifying the node's URL.
+    • We perform tests on the browsers as usual.
+    • Finally, we close the browsers.
+
+Conclusion:
+By following these steps, you have successfully set up a Selenium Grid on AWS and executed tests in parallel across different nodes with different browsers. This lab demonstrates the power of parallel test execution for efficient and faster testing.
